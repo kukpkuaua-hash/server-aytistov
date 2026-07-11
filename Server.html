@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сервер Аутистов | Discord</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Плавная прокрутка при нажатии на ссылки */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* === Настройки переменных для тем === */
+        :root {
+            --bg-gradient: linear-gradient(135deg, #e6e9f0 0%, #eef1f5 100%);
+            --text-color: #1a1a1a;
+            --subtle-text: #555555;
+            --glass-bg: rgba(255, 255, 255, 0.45);
+            --glass-border: rgba(255, 255, 255, 0.6);
+            --glass-shadow: rgba(0, 0, 0, 0.05);
+            --blob-1: rgba(200, 210, 220, 0.5);
+            --blob-2: rgba(180, 190, 210, 0.4);
+            --icon-bg: rgba(128, 128, 128, 0.1);
+        }
+
+        body.dark-mode {
+            --bg-gradient: linear-gradient(135deg, #0f1115 0%, #1a1d24 100%);
+            --text-color: #f0f0f0;
+            --subtle-text: #a0a0a0;
+            --glass-bg: rgba(30, 33, 40, 0.45);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-shadow: rgba(0, 0, 0, 0.4);
+            --blob-1: rgba(40, 45, 55, 0.6);
+            --blob-2: rgba(25, 30, 40, 0.5);
+            --icon-bg: rgba(255, 255, 255, 0.05);
+        }
+
+        /* === Базовые стили === */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            transition: background 0.4s ease, color 0.4s ease;
+            overflow-x: hidden;
+        }
+
+        /* Фоновые пятна для эффекта стекла */
+        .blob {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -1;
+            transition: background 0.4s ease;
+        }
+        .blob-1 {
+            width: 500px;
+            height: 500px;
+            background: var(--blob-1);
+            top: -100px;
+            left: -100px;
+        }
+        .blob-2 {
+            width: 400px;
+            height: 400px;
+            background: var(--blob-2);
+            bottom: -50px;
+            right: -50px;
+        }
+
+        /* === Эффект стекла === */
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 var(--glass-shadow);
+        }
+
+        /* === Шапка === */
+        header {
+            position: sticky;
+            top: 10px;
+            z-index: 100;
+            margin: 10px 20px 0 20px;
+            padding: 15px 30px;
+            border-radius: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.3rem;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+        .logo span {
+            font-weight: 300;
+            opacity: 0.8;
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--subtle-text);
+            font-weight: 400;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+        nav a:hover {
+            color: var(--text-color);
+        }
+
+        /* === Переключатель темы === */
+        .theme-switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+            background: rgba(128, 128, 128, 0.2);
+            border-radius: 30px;
+            cursor: pointer;
+            border: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            padding: 2px;
+            transition: background 0.3s;
+        }
+        .theme-switch::after {
+            content: "";
+            width: 20px;
+            height: 20px;
+            background: var(--text-color);
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+        body.dark-mode .theme-switch::after {
+            transform: translateX(24px);
+        }
+
+        /* === Главный блок === */
+        .hero {
+            text-align: center;
+            padding: 80px 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            letter-spacing: -2px;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--subtle-text);
+            font-weight: 300;
+            max-width: 550px;
+            margin: 0 auto 40px auto;
+        }
+
+        /* === Кнопка === */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 35px;
+            color: var(--text-color);
+            text-decoration: none;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px var(--glass-shadow);
+        }
+        .btn svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        /* === Сетка карточек === */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            padding: 20px 20px 80px 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .card {
+            padding: 30px;
+            border-radius: 20px;
+            transition: transform 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--icon-bg);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .card-icon svg {
+            width: 20px;
+            height: 20px;
+            stroke: var(--text-color);
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .card h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .card p {
+            font-size: 0.95rem;
+            color: var(--subtle-text);
+            font-weight: 300;
+        }
+
+        /* === Блок Правил === */
+        .rules-section {
+            max-width: 800px;
+            margin: 0 auto 30px auto;
+            padding: 40px;
+            border-radius: 20px;
+        }
+
+        .rules-section h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .rules-list {
+            list-style: none;
+            display: grid;
+            gap: 15px;
+        }
+
+        .rules-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            color: var(--subtle-text);
+            font-weight: 300;
+            font-size: 1rem;
+        }
+
+        .rule-num {
+            background: var(--icon-bg);
+            color: var(--text-color);
+            min-width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        /* Подвал */
+        footer {
+            text-align: center;
+            padding: 25px;
+            margin: 0 20px 20px 20px;
+            border-radius: 20px;
+            color: var(--subtle-text);
+            font-size: 0.85rem;
+        }
+
+        /* === Адаптивность === */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            nav a {
+                display: none;
+            }
+            nav a:last-of-type {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Фоновые пятна -->
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+
+    <!-- Шапка -->
+    <header class="glass">
+        <div class="logo">Сервер<span>Аутистов</span></div>
+        <nav>
+            <a href="#about">О сервере</a>
+            <a href="#rules">Правила</a>
+            <div class="theme-switch" onclick="toggleTheme()"></div>
+        </nav>
+    </header>
+
+    <!-- Главный блок -->
+    <section class="hero">
+        <h1>Добро пожаловать в уют</h1>
+        <p>Место, где можно просто быть собой. Мягкое общение, отсутствие токсичности и комфортная атмосфера. Присоединяйся к нашей компании.</p>
+        <a href="https://discord.gg/mMcajJu9K9" class="btn glass" target="_blank">
+            <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+            Войти в Discord
+        </a>
+    </section>
+
+    <!-- Карточки -->
+    <section class="features" id="about">
+        <div class="card glass">
+            <div class="card-icon">
+                <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <h3>Мягкая атмосфера</h3>
+            <p>Никакого лишнего шума и агрессии. Только спокойное общение на отвлеченные темы в комфортной обстановке.</p>
+        </div>
+        
+        <div class="card glass">
+            <div class="card-icon">
+                <svg viewBox="0 0 24 24"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
+            </div>
+            <h3>Голосовые каналы</h3>
+            <p>Специальные каналы для музыки, игр или просто фонового молчания вместе. Найди свою компанию.</p>
+        </div>
+        
+        <div class="card glass">
+            <div class="card-icon">
+                <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <h3>Понятные правила</h3>
+            <p>Минимум ограничений, но максимум уважения друг к другу. Администрация на стороне адекватности.</p>
+        </div>
+    </section>
+
+    <!-- Блок с Правилами -->
+    <section class="rules-section glass" id="rules">
+        <h2>Правила сервера</h2>
+        <ul class="rules-list">
+            <li>
+                <span class="rule-num">1</span>
+                <div><strong>Уважение к участникам.</strong> Никаких оскорблений, дискриминации и токсичного поведения. Мы здесь для отдыха.</div>
+            </li>
+            <li>
+                <span class="rule-num">2</span>
+                <div><strong>Запрет спама и флуда.</strong> Не засоряйте текстовые каналы бессмысленными сообщениями или рекламой.</div>
+            </li>
+            <li>
+                <span class="rule-num">3</span>
+                <div><strong>Адекватность в голосе.</strong> Не кричите в микрофон, не включайте громкую музыку без спроса и не мешайте другим говорить.</div>
+            </li>
+            <li>
+                <span class="rule-num">4</span>
+                <div><strong>Без NSFW контента.</strong> Запрещено размещать материалы 18+ в текстовых и голосовых каналах.</div>
+            </li>
+            <li>
+                <span class="rule-num">5</span>
+                <div><strong>Слушай модерацию.</strong> Если возник спор — решайте его спокойно или обращайтесь к администрации.</div>
+            </li>
+        </ul>
+    </section>
+
+    <!-- Подвал -->
+    <footer>
+        <p>&copy; 2023 Сервер Аутистов. Сделано с любовью к тишине.</p>
+    </footer>
+
+    <script>
+        // Скрипт для переключения темы
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+        }
+    </script>
+
+</body>
+</html>
